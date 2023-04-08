@@ -1,5 +1,4 @@
-
-
+import abc
 from collections import UserDict
 from datetime import date
 from pickle import dump, load
@@ -7,7 +6,40 @@ import re
 import os
 from math import ceil
 
+class AbstractMet(abc.ABC):
 
+    @abc.abstractmethod
+    def __sanitize_phone_number(self, phone):
+        pass
+    @abc.abstractmethod
+    def __find_phone(self, phone):
+        pass
+    @abc.abstractmethod
+    def days_to_birthday(self):
+        pass
+    @abc.abstractmethod
+    def add_phone(self, phone) -> bool:
+        pass
+
+    @abc.abstractmethod
+    def del_phone(self, phone) -> bool:
+        pass
+
+    @abc.abstractmethod
+    def edit_phone(self, current_value, new_value) -> bool:
+        pass
+
+    @abc.abstractmethod
+    def add_record(self, record):
+        pass
+
+    @abc.abstractmethod
+    def search_bd(self, days: str):
+        pass
+
+    @abc.abstractmethod
+    def search(self, pattern: str):
+        pass
 
 class Field:
     _required = False
@@ -37,7 +69,7 @@ class Name(Field):
             self._value = "John Doe"
 
 
-class Phone(Field):
+class Phone(Field, AbstractMet):
     def __init__(self, value: str) -> None:
         super().__init__(multi_field=True)
         self.value = value
@@ -105,7 +137,7 @@ class Email(Field):
         self.value = value
 
 
-class Record:
+class Record(AbstractMet):
     def __init__(self, name, phone=None,
                  birthday=None, email=None, address_home=None) -> None:
         self.name = name
@@ -185,7 +217,7 @@ class Record:
         return False
 
 
-class AddressBook(UserDict):
+class AddressBook(UserDict, AbstractMet):
     def __init__(self, init_dict=None, db_file_path=None):
         self.__address_db_file = db_file_path or "address_book.dat"
 
@@ -283,4 +315,3 @@ class AddressBook(UserDict):
                       "Deserialization is impossible!")
                 return False
         return True
-@enduml

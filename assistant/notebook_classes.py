@@ -1,12 +1,63 @@
+import abc
 from collections import UserDict
 import pickle
 import os
 import re
 from math import ceil
-
+import abc
 
 # батьківський клас у якому прописані __init__, @property, @setter,
 # які наслідують класи Tag, Title, Content
+
+class AbcMet(abc.ABC):
+    @abc.abstractmethod
+    def add_tags(self, note):
+        pass
+
+    @abc.abstractmethod
+    def add_note(self, note):
+        pass
+
+    @abc.abstractmethod
+    def del_note(self, note_id):
+        pass
+
+    @abc.abstractmethod
+    def overwrite_note(self, note_id: int, new_note):
+        pass
+
+    @abc.abstractmethod
+    def add_tag(self, tag, note_id=None):
+        pass
+
+    @abc.abstractmethod
+    def del_tag(self, tag):
+        pass
+
+    @abc.abstractmethod
+    def untag_note(self, tag, note_id):
+        pass
+
+    @abc.abstractmethod
+    def clear_note_tags(self, note_id):
+        pass
+
+    @abc.abstractmethod
+    def search(self, text: str, paginate=True):
+        pass
+
+    @abc.abstractmethod
+    def search_by_id(self, note_id):
+        pass
+
+    @abc.abstractmethod
+    def get_by_tag(self, tag, paginate=True):
+        pass
+
+    @abc.abstractmethod
+    def get_all(self, paginate=True):
+        pass
+
 class Field:
     def __init__(self, value) -> None:
         self.value = value
@@ -36,16 +87,16 @@ class Note:
                 f"{self.content.value}")
 
 
-class Tag(Field):  # тег
+class Tag(Field, AbcMet):  # тег
     def __init__(self, value):
         super().__init__(value)
         self.notes = []
 
-    def add_note(self, note: Note):
+    def add_tag(self, note: Note):
         self.notes.append(note.id)
 
 
-class NoteBook(UserDict):  # контейнер для нотаток
+class NoteBook(UserDict, AbcMet):  # контейнер для нотаток
     
     def __init__(self, init_list: list[Note] = None):
         init_dict = {n.id: n for n in init_list} if init_list else None
